@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EISCStudioProject version="3.00">
+    <Compile BUILDTYPE="executable" CC="ae32000-elf-gcc" AS="ae32000-elf-as" LD="ae32000-elf-ld" AR="ae32000-elf-ar" OBJDUMP="ae32000-elf-objdump" OBJCOPY="ae32000-elf-objcopy" CFLAGS="-fno-strength-reduce" LDFLAGS="-Wall -nostartfiles -lgcc -lc -lm -Wl,--warn-common " ASFLAGS="" ARFLAGS="-rcv" DISFLAGS="-dzShxl" OUTPUTDIR="output/" OBJDIR="obj/" DebugInfo="1" Wall="1" OPTLEVEL="0" OUTPUTFILE="Quming_AIR" />
+    <Directory>
+        <INCDIR Name="include" />
+    </Directory>
+    <Files>
+        <Source Name="startup/adLunaInit.c" />
+        <Source Name="startup/BoardInit_T4MK.c" />
+        <Source Name="startup/startup_adLuna.s" />
+        <Source Name="main.c" />
+        <Source Name="Raon_Func.c" />
+        <Header Name="image_db.h" />
+        <Header Name="raon_func.h" />
+        <Header Name="raon_global.h" />
+        <LinkScript Name="startup/adLuna.ld" />
+        <Library Name="lib/libadLuna.a" />
+        <LastOpenFile Name="main.c" Line="36" />
+    </Files>
+    <Event cmd="" desc="" enable="true" />
+    <Debug>
+        <Argument Name="" />
+        <UseGlobalOption Name="true" />
+    </Debug>
+</EISCStudioProject>

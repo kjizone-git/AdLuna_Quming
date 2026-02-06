@@ -1,0 +1,1 @@
+..\EConMan.exe -target -sysinit -ffw 0 nand_dump_usb_ph4444.bin -exit

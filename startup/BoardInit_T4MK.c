@@ -1,0 +1,31 @@
+#include "sdk.h"
+
+void evmboardinit()
+{
+	*R_PAF(0) = F_PAF0_0_GP0 | F_PAF0_1_GP1 | F_PAF0_2_GP2 | F_PAF0_3_GP3 | F_PAF0_4_UART3_TX| F_PAF0_5_TWI0_SDA | F_PAF0_6_TWI0_SCL | F_PAF0_7_TIMER1_PWM;
+#if 1
+	*R_PAF(1) = F_PAF1_0_SF_CS | F_PAF1_1_SF_DQ1 | F_PAF1_2_SF_DQ2 | F_PAF1_3_GP3 | F_PAF1_4_GP4  | F_PAF1_5_SF_DQ3 | F_PAF1_6_GP6 | F_PAF1_7_GP7;
+#else
+	//*R_PAF(1) = F_PAF1_0_SF_CS | F_PAF1_1_SF_DQ1 | F_PAF1_2_SF_DQ2 | F_PAF1_3_SF_DQ0 | F_PAF1_4_SF_CLK  | F_PAF1_5_SF_DQ3 | F_PAF1_6_GP6 | F_PAF1_7_GP7;
+#endif	
+	*R_PAF(2) = F_PAF2_0_GP0 | F_PAF2_1_GP1 | F_PAF2_2_GP2| F_PAF2_3_GP3;	
+	*R_PAF(4) = F_PAF4_0_GP0	 | F_PAF4_1_SPWM_P0 | F_PAF4_2_GP2 | F_PAF4_3_GP3;
+	*R_PAF(5) = F_PAF5_0_UART0_TX | F_PAF5_1_UART0_RX | F_PAF5_2_GP2 | F_PAF5_3_GP3 | F_PAF5_4_SPI1_CS | F_PAF5_5_SPI1_SDO | F_PAF5_6_GP6 | F_PAF5_7_SPI1_CLK;
+	*R_PAF(6) = F_PAF6_0_GP0 | F_PAF6_1_GP1 | F_PAF6_2_GP2;
+	*R_PAF(7) = F_PAF7_0_GP0 | F_PAF7_1_GP1;
+
+	*R_GPODIR(1) |= 1<<3 ;	// LCD Data/Cmd
+	*R_GPODIR(1) |= 1<<4 ;	// LCD RESET
+	*R_GPODIR(4) |= 1<<0 ;	// LCD BackLight EN
+	*R_GPOLOW(4) = 1<<0; 	//LCD BackLight Pin = "L"
+}
+
+void amp_on(bool b)
+{
+	if (b)
+		*R_GPOHIGH(0) = 1 << 7;
+	else
+		*R_GPOLOW(0) = 1 << 7;
+}
+
+	

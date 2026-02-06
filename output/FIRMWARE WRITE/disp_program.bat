@@ -1,0 +1,1 @@
+..\EConMan.exe -target -sysinit -ffw 0 PHXX_RD_TEST_DSPSHOW.bin -exit
