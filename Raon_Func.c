@@ -990,7 +990,7 @@ void Load_Image_Test_Mode_Version(void)
 void Load_Image_Home_New(void)
 {
 	//오염도2 bytes, 대기질1, 오염도단위1, 운전모드1, 잠금표시1	
-	U8 cur_pol_stat,cur_mode,cur_lock,cur_pol_step,cur_filter;
+	U8 cur_pol_stat,cur_mode,cur_lock,cur_pol_step,cur_filter,cur_timer;
 	U16 cur_pol_val;
 	U16 offset;
 
@@ -1002,9 +1002,10 @@ void Load_Image_Home_New(void)
 	cur_pol_stat = uart_rx_data[7];
 	cur_pol_step = uart_rx_data[8];
 	cur_mode = uart_rx_data[9];
-	cur_lock = uart_rx_data[10]&0x0F;
-	cur_filter = uart_rx_data[10]&0xF0;
-	
+
+	cur_lock = uart_rx_data[10]&0x01;
+	cur_timer = uart_rx_data[10]&0x02;
+	cur_filter = uart_rx_data[10]&0x04;	
 //	if(prev_pol_val != cur_pol_val)
 	{
 		prev_pol_val = cur_pol_val;
@@ -1034,13 +1035,13 @@ void Load_Image_Home_New(void)
 
 		switch(cur_pol_stat)
 		{
-			case 0: Load_Image_FrameBuffer_2GRAY(IMG_AIR00,148,19,68,18);//GOOD
+			case 0:	Load_Image_FrameBuffer_2GRAY(IMG_AIR00,148,17,70,18);//GOOD
 					break;
-			case 1: Load_Image_FrameBuffer_2GRAY(IMG_AIR01,148,19,68,18);//NOR
+			case 1: Load_Image_FrameBuffer_2GRAY(IMG_AIR01,148,17,70,18);//NOR
 					break;
-			case 2: Load_Image_FrameBuffer_2GRAY(IMG_AIR02,148,19,68,18);//BAD
+			case 2: Load_Image_FrameBuffer_2GRAY(IMG_AIR02,148,17,70,18);//BAD
 					break;					
-			case 3: Load_Image_FrameBuffer_2GRAY(IMG_AIR03,148,19,68,18);//WORST
+			case 3: Load_Image_FrameBuffer_2GRAY(IMG_AIR03,148,17,70,18);//WORST
 					break;	
 			default: 
 					break;
@@ -1054,17 +1055,17 @@ void Load_Image_Home_New(void)
 		//Load_Image_FrameBuffer_2GRAY(IMG_0001_0100B,152,45,42,14);
 		switch(cur_mode)
 		{
-			case 0: Load_Image_FrameBuffer_2GRAY(IMG_MODE_00,148,41,66,17);//자동
+			case 0: Load_Image_FrameBuffer_2GRAY(IMG_MODE_00,148,41,70,18);//자동
 					break;
-			case 1: Load_Image_FrameBuffer_2GRAY(IMG_MODE_01,148,41,66,17);//약
+			case 1: Load_Image_FrameBuffer_2GRAY(IMG_MODE_01,148,41,70,18);//약
 					break;
-			case 2: Load_Image_FrameBuffer_2GRAY(IMG_MODE_02,148,41,66,17);//강
+			case 2: Load_Image_FrameBuffer_2GRAY(IMG_MODE_02,148,41,70,18);//강
 					break;					
-			case 3: Load_Image_FrameBuffer_2GRAY(IMG_MODE_03,148,41,66,17);//터보.
+			case 3: Load_Image_FrameBuffer_2GRAY(IMG_MODE_03,148,41,70,18);//터보.
 					break;
-			case 4: Load_Image_FrameBuffer_2GRAY(IMG_MODE_04,148,41,66,17);//수면.
+			case 4: Load_Image_FrameBuffer_2GRAY(IMG_MODE_04,148,41,70,18);//수면.
 					break;						
-			case 5: Load_Image_FrameBuffer_2GRAY(IMG_MODE_05,148,41,66,17);//수유.
+			case 5: Load_Image_FrameBuffer_2GRAY(IMG_MODE_05,148,41,70,18);//수유.
 					break;					
 			default: break;
 		}		
@@ -1077,35 +1078,44 @@ void Load_Image_Home_New(void)
 		//Load_Image_FrameBuffer_2GRAY(IMG_0001_0200B,152,59,37,14);
 		switch(cur_pol_step)
 		{
-			case 0: Load_Image_FrameBuffer_2GRAY(IMG_PM1_0,148,63,64,14);//1.0
+			case 0: Load_Image_FrameBuffer_2GRAY(IMG_PM1_0,148,65,52,14);//1.0
 					break;
-			case 1: Load_Image_FrameBuffer_2GRAY(IMG_PM2_5,148,63,64,14);//2.5
+			case 1: Load_Image_FrameBuffer_2GRAY(IMG_PM2_5,148,65,52,14);//2.5
 					break;
-			case 2: Load_Image_FrameBuffer_2GRAY(IMG_PM10,148,63,64,14);//10			
+			case 2: Load_Image_FrameBuffer_2GRAY(IMG_PM10,148,65,52,14);//10			
 					break;					
 			default: break;
 		}
 	}	
 
-//	if(prev_lock != cur_lock)
-	{
-		prev_lock = cur_lock;
-		//clear
-		if(cur_lock)
-			Load_Image_FrameBuffer_2GRAY(IMG_NEW_UNLOCK,220,56,20,20);//Black으로 표시하도록 변경 260115
-		else
-			Load_Image_FrameBuffer_2GRAY(IMG_NEW_LOCK,220,56,20,20);
-	}
 
 //	if(prev_filter != cur_filter)
 	{
 		prev_filter = cur_filter;
 		//clear
 		if(cur_filter)
-			Load_Image_FrameBuffer_2GRAY(IMG_Filter_On,222,18,15,17);
+			Load_Image_FrameBuffer_2GRAY(IMG_H_FILTER,223,17,15,17);
 		else
-			Load_Image_FrameBuffer_2GRAY(IMG_Filter_Off,222,18,15,17);
+			Load_Image_FrameBuffer_2GRAY(IMG_H_FILTER_OFF,223,17,15,17);
 	}
+
+	prev_timer = cur_timer;
+	//clear
+	if(cur_timer)
+		Load_Image_FrameBuffer_2GRAY(IMG_H_TIMER,223,40,15,15);
+	else
+		Load_Image_FrameBuffer_2GRAY(IMG_H_TIMER_OFF,223,40,15,15);
+
+//	if(prev_lock != cur_lock)
+	{
+		prev_lock = cur_lock;
+		//clear
+		if(cur_lock)
+			Load_Image_FrameBuffer_2GRAY(IMG_H_LOCK,223,61,15,18);//Black으로 표시하도록 변경 260115
+		else
+			Load_Image_FrameBuffer_2GRAY(IMG_H_LOCK_OFF,223,61,15,18);
+	}
+	
 
 }
 
@@ -1275,55 +1285,71 @@ void raon_dispaly_service(void)
 								Load_Image_FrameBuffer_2GRAY(IMG_M00,0,0,256,96);
 						#endif						
 								break;		
-		case SCN_SET_OFFTIME:	Clear_Frame_Buffer();//30%적용.
+		case SCN_SET_OFFTIME:	Clear_Frame_Buffer();
 								//Display Base Image
 								Load_Image_FrameBuffer_2GRAY(IMG_T0100_BASE,0,0,256,96);
 								Load_Image_Set_Offtime(uart_rx_data[CMD_SUB1_IDX]);							
 								break;
 								
-		case SCN_ILLUM_MODE:	Clear_Frame_Buffer();//30%적용.
+		case SCN_ILLUM_MODE:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
 									Load_Image_FrameBuffer_2GRAY(IMG_0101,0,0,256,96);//오염도.
 								else
 									Load_Image_FrameBuffer_2GRAY(IMG_0100,0,0,256,96);//무드등.
 								break;				
-		case SCN_ILLUM_STEP:	Clear_Frame_Buffer();//30%적용.
+		case SCN_ILLUM_STEP:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
 									Load_Image_FrameBuffer_2GRAY(IMG_0201,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
 									Load_Image_FrameBuffer_2GRAY(IMG_0202,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)
 									Load_Image_FrameBuffer_2GRAY(IMG_0203,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==4)
+									Load_Image_FrameBuffer_2GRAY(IMG_0204,0,0,256,96);//수유
+								else if(uart_rx_data[CMD_SUB1_IDX]==5)
+									Load_Image_FrameBuffer_2GRAY(IMG_0205,0,0,256,96);//수면.
 								else
 									Load_Image_FrameBuffer_2GRAY(IMG_0200,0,0,256,96);								
 								break;
-		case SCN_BRIGHT:		Clear_Frame_Buffer();//30%적용.
+		case SCN_BRIGHT:		Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)								
 									Load_Image_FrameBuffer_2GRAY(IMG_0301,0,0,256,96);//STEP2
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)								
 									Load_Image_FrameBuffer_2GRAY(IMG_0302,0,0,256,96);//STEP3
+								else if(uart_rx_data[CMD_SUB1_IDX]==3)								
+									Load_Image_FrameBuffer_2GRAY(IMG_0303,0,0,256,96);//수유
+								else if(uart_rx_data[CMD_SUB1_IDX]==4)								
+									Load_Image_FrameBuffer_2GRAY(IMG_0304,0,0,256,96);//수면.
 								else			
 									Load_Image_FrameBuffer_2GRAY(IMG_0300,0,0,256,96);//STEP 1
 								//밝기 조절....
 								
 								break;
-		case SCN_SOUND_MODE:	Clear_Frame_Buffer();//30%적용.
+		case SCN_SOUND_MODE:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)								
 									Load_Image_FrameBuffer_2GRAY(IMG_0401,0,0,256,96);//효과음.
+								else if(uart_rx_data[CMD_SUB1_IDX]==2)								
+									Load_Image_FrameBuffer_2GRAY(IMG_0402,0,0,256,96);//수유
+								else if(uart_rx_data[CMD_SUB1_IDX]==3)								
+									Load_Image_FrameBuffer_2GRAY(IMG_0403,0,0,256,96);//수면.	
 								else
 									Load_Image_FrameBuffer_2GRAY(IMG_0400,0,0,256,96);//음성안내.
 								break;			
-		case SCN_SOUND_STEP:	Clear_Frame_Buffer();//30%적용.
+		case SCN_SOUND_STEP:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
 									Load_Image_FrameBuffer_2GRAY(IMG_0501,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
 									Load_Image_FrameBuffer_2GRAY(IMG_0502,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)
 									Load_Image_FrameBuffer_2GRAY(IMG_0503,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==4)
+									Load_Image_FrameBuffer_2GRAY(IMG_0504,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==5)
+									Load_Image_FrameBuffer_2GRAY(IMG_0505,0,0,256,96);								
 								else 
 									Load_Image_FrameBuffer_2GRAY(IMG_0500,0,0,256,96);//무음.								
 								break;
-		case SCN_FILTER_STEP:		Clear_Frame_Buffer();//30%적용.
+		case SCN_FILTER_STEP:		Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
 									Load_Image_FrameBuffer_2GRAY(IMG_0601,0,0,256,96);//보통 
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
@@ -1388,7 +1414,7 @@ void raon_dispaly_service(void)
 								else if(uart_rx_data[CMD_SUB1_IDX]==5)
 									Load_Image_FrameBuffer_2GRAY(IMG_0201_05,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==6)
-									Load_Image_FrameBuffer_2GRAY(IMG_0201_06,0,0,256,96);								
+									Load_Image_FrameBuffer_2GRAY(IMG_N0201_06,0,0,256,96);//Load_Image_FrameBuffer_2GRAY(IMG_0201_06,0,0,256,96);								
 								else if(uart_rx_data[CMD_SUB1_IDX]==7)
 									Load_Image_FrameBuffer_2GRAY(IMG_0201_07,0,0,256,96);								
 								else if(uart_rx_data[CMD_SUB1_IDX]==8)
@@ -1402,15 +1428,30 @@ void raon_dispaly_service(void)
 								else 
 									Load_Image_FrameBuffer_2GRAY(IMG_0201_00,0,0,256,96);
 								break;	
+								
 		case SCN_FILT_CLEAR:	Clear_Frame_Buffer();
 								Load_Set_FilterClear(uart_rx_data[CMD_SUB1_IDX]);
-								break;								
-		case SCN_TEST:	if(uart_rx_data[CMD_SUB1_IDX])//Display White
-							Set_Frame_Buffer();
-						else
-							Clear_Frame_Buffer();//Display Black
-						//Load_Image_FrameBuffer_2GRAY(IMG_WHITEREG_1010,0,0,12,10);
-						break;
+								break;		
+								
+		case SCN_ERR_POPUP:		Clear_Frame_Buffer();
+								if(uart_rx_data[CMD_SUB1_IDX]==2)
+									Load_Image_FrameBuffer_2GRAY(IMG_E0203_02,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==3)
+									Load_Image_FrameBuffer_2GRAY(IMG_E0203_03,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==4)
+									Load_Image_FrameBuffer_2GRAY(IMG_E0203_04,0,0,256,96);
+								else if(uart_rx_data[CMD_SUB1_IDX]==5)
+									Load_Image_FrameBuffer_2GRAY(IMG_E0203_05,0,0,256,96);
+								else
+									Load_Image_FrameBuffer_2GRAY(IMG_E0203_01,0,0,256,96);
+								break;
+			
+		case SCN_TEST:		if(uart_rx_data[CMD_SUB1_IDX])//Display White
+								Set_Frame_Buffer();
+							else
+								Clear_Frame_Buffer();//Display Black
+							//Load_Image_FrameBuffer_2GRAY(IMG_WHITEREG_1010,0,0,12,10);
+							break;
 						
 		case SCN_LCD_EN:	debugprintf("LCD Enable Command:%d(0:0x28(OFF), else:0x29(ON)).\r\n",uart_rx_data[CMD_SUB1_IDX]);
 							if(uart_rx_data[CMD_SUB1_IDX])

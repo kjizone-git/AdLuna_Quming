@@ -51,6 +51,7 @@ enum //SCENE_IDX
 	SCN_FILT_POPUP = 0x0200,//필터알람팝업
 	SCN_NORM_POPUP = 0x0201,//일반 팝업.
 	SCN_FILT_CLEAR = 0x0202,//필터초기화	
+	SCN_ERR_POPUP = 0x0203,//에러팝업.
 	SCN_DEMO = 0xFF00,//데모모드.
 	SCN_TEST,//검정화면
 	SCN_LCD_EN, 
@@ -86,6 +87,7 @@ U8 prev_pol_stat;
 U8 prev_mode;
 U8 prev_lock;
 U8 prev_filter;
+U8 prev_timer;
 U8 prev_pol_step;
 
 U16 Prev_Scene_ID;
