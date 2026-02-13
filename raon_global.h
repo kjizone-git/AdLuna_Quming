@@ -6,6 +6,10 @@
 #define UART_CMD_START	0x52//'R'aon
 #define UART_CMD_2ND	0x41//r'A'on
 
+#define LCD_VER_YEAR 26
+#define LCD_VER_MON 02
+#define LCD_VER_DATE 13
+
 U8 FW_Version[2]={
 	0x00,
 	0x00

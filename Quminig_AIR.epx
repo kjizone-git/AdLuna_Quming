@@ -15,7 +15,7 @@
         <Header Name="raon_global.h" />
         <LinkScript Name="startup/adLuna.ld" />
         <Library Name="lib/libadLuna.a" />
-        <LastOpenFile Name="main.c" Line="37" />
+        <LastOpenFile Name="Raon_Func.c" Line="22" />
     </Files>
     <Event cmd="" desc="" enable="true" />
     <Debug>

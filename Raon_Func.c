@@ -471,27 +471,28 @@ void raon_display_demo_mode(U8 scene_idx)
 				break;
 		case 2: Load_Image_FrameBuffer_2GRAY(IMG_LARGE_M00,0,0,256,96);
 				break;
-		case 3: Load_Image_FrameBuffer_2GRAY(IMG_0300,0,0,256,96);
+		case 3: Load_Image_FrameBuffer_2GRAY(IMG_S0300,0,0,256,96);
 				break;				
-		case 4: Load_Image_FrameBuffer_2GRAY(IMG_0400,0,0,256,96);
+		case 4: Load_Image_FrameBuffer_2GRAY(IMG_S0400,0,0,256,96);
 				break;				
-		case 5: Load_Image_FrameBuffer_2GRAY(IMG_0500,0,0,256,96);
+		case 5: Load_Image_FrameBuffer_2GRAY(IMG_S0500,0,0,256,96);
 				break;
-		case 6: Load_Image_FrameBuffer_2GRAY(IMG_0600,0,0,256,96);
+		case 6: Load_Image_FrameBuffer_2GRAY(IMG_S0600,0,0,256,96);
 				break;				
-		case 7: Load_Image_FrameBuffer_2GRAY(IMG_0700,0,0,256,96);
+		case 7: Load_Image_FrameBuffer_2GRAY(IMG_S0701_BASE,0,0,256,96);
 				break;
 		case 8: Load_Image_FrameBuffer_2GRAY(IMG_D00,0,0,256,96);
 				break;				
 		case 9: Load_Image_FrameBuffer_2GRAY(IMG_P00,0,0,256,96);
 				break;				
-		default: Load_Image_FrameBuffer_2GRAY(IMG_0200,0,0,256,96);
+		default: Load_Image_FrameBuffer_2GRAY(IMG_S0200,0,0,256,96);
 				break;
 	}
 	TFT_LCD_225Inch_SPI_TX(2);
 	LCD_BL_gpio_write(1);		
 	Write_REG_Index(0x29);
 }
+
 void Load_Set_Alarm(U8 disp_data)
 {
 	//U8 disp_free, disp_pet, disp_com;
@@ -508,11 +509,36 @@ void Load_Set_Alarm(U8 disp_data)
 	disp_pet = (disp_data>>4)&0x03;
 	disp_com = (disp_data>>6)&0x03;
 
+#if 1
 	//Display BASE Image
-	//Load_Image_FrameBuffer_2GRAY(IMG_0701_BASE,0,0,256,96);
-	Load_Image_FrameBuffer_2GRAY(IMG_0701_BASE_NEW,0,0,256,96);
+	Load_Image_FrameBuffer_2GRAY(IMG_S0701_BASE,0,0,256,96);
 	
-	
+
+	//Display FREE Filter
+	if(disp_free == 1)//GRAY
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_G,35,69,60,22);
+	else if(disp_free == 2)//WHITE
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_W,35,69,60,22);					
+	else//Black
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_B,35,69,60,22);		
+
+	//Display PET Filter
+	if(disp_pet == 1)//GRAY
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_G,98,69,60,22);
+	else if(disp_pet == 2)//WHITE
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_W,98,69,60,22);					
+	else//Black
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_B,98,69,60,22); 	
+
+	//Display COMPLEX Filter
+	if(disp_com == 1)//GRAY
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_G,161,69,60,22);
+	else if(disp_com == 2)//WHITE
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_W,161,69,60,22);	
+	else//Black
+		Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_B,161,69,60,22);
+#else
+	//Load_Image_FrameBuffer_2GRAY(IMG_0701_BASE_NEW,0,0,256,96);
 
 	//Display FREE Filter
 	if(disp_free == 1)//GRAY
@@ -537,6 +563,7 @@ void Load_Set_Alarm(U8 disp_data)
 		Load_Image_FrameBuffer_2GRAY(IMG_W_COM,182,70,34,17);					
 	else//Black
 		Load_Image_FrameBuffer_2GRAY(IMG_BLK,182,70,34,17);			
+#endif	
 }
 
 void Load_Set_FilterPopup(U8 disp_data)
@@ -631,6 +658,7 @@ void Load_Image_Set_Offtime(unsigned char offset)
 {
 	unsigned int index;
 
+#if 0
 //	Image size H = 177	  V = 29
 //	Convert to Gray 2bit/pixel	Total : 1305 Bytes
 	if(offset>12)//0~12시간.
@@ -639,6 +667,17 @@ void Load_Image_Set_Offtime(unsigned char offset)
 		index = offset * 1305;
 	
 	Load_Image_FrameBuffer_2GRAY(&IMG_F00T12[index],39,55,177,29);
+#else
+//Image size H = 150	  V = 23
+//Convert to Gray 2bit/pixel		Total : 874 Bytes
+
+	if(offset>12)//0~12시간.
+		index = 0;
+	else
+		index = offset * 874;
+	
+	Load_Image_FrameBuffer_2GRAY(&IMG_S00UT00_12[index],53,59,150,22);
+#endif
 }
 
 void Load_Image_Test_Mode_Led(void)
@@ -965,6 +1004,61 @@ void Load_Image_Test_Mode_Version(void)
 
 	//Display MCU VERSION		 
 	Load_Image_FrameBuffer_2GRAY(IMG_VERSION,0,0,256,96);
+
+#if 1//000.000표시.
+	//VER MSB
+	//Image size H = 14  V = 23
+	//Convert to Gray 2bit/pixel	 Total : 92 Bytes							
+	//DIGIG 100
+	offset = ((uart_rx_data[CMD_SUB1_IDX]/100)%10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],112,20,14,23);
+	//DIGIG 10
+	offset = ((uart_rx_data[CMD_SUB1_IDX]%100)/10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],126,20,14,23);
+	//DIGIG 1
+	offset = (uart_rx_data[CMD_SUB1_IDX]%10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],140,20,14,23);
+	
+	//DOT
+	Load_Image_FrameBuffer_2GRAY(IMG_DOT,154,20,7,23);
+	
+	//LSB
+	//DIGIG 100
+	offset = ((uart_rx_data[CMD_SUB2_IDX]/100)%10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],161,20,14,23);							
+
+	//DIGIG 10
+	offset = ((uart_rx_data[CMD_SUB2_IDX]%100)/10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],175,20,14,23);
+
+	//DIGIG 1
+	offset = (uart_rx_data[CMD_SUB2_IDX]%10)*92;
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],189,20,14,23);
+	
+
+	//Display LCD VERSION 00.00.00
+	//VER YEAR 	
+	offset = (LCD_VER_YEAR/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],93,53,14,23);	
+	offset = (LCD_VER_YEAR%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],107,53,14,23);	
+	//DOT
+	Load_Image_FrameBuffer_2GRAY(IMG_DOT,121,53,7,23);
+
+	//VER MON
+	offset = (LCD_VER_MON/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],128,53,14,23);	
+	offset = (LCD_VER_MON%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],142,53,14,23);	
+	//DOT
+	Load_Image_FrameBuffer_2GRAY(IMG_DOT,156,53,7,23);
+
+	//VER DATE
+	offset = (LCD_VER_DATE/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],163,53,14,23);	
+	offset = (LCD_VER_DATE%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],177,53,14,23);	
+#else//0.0표시.
 	//VER MSB
 	//Image size H = 14  V = 23
 	//Convert to Gray 2bit/pixel	 Total : 92 Bytes							
@@ -985,7 +1079,7 @@ void Load_Image_Test_Mode_Version(void)
 	//LSB
 	offset = (FW_Version[1]%10)*92;		
 	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],114,53,14,23);	
-
+#endif
 }
 void Load_Image_Home_New(void)
 {
@@ -1252,8 +1346,10 @@ void raon_dispaly_service(void)
 							Load_Image_FrameBuffer_2GRAY(IMG_02_25696,0,0,256,96);
 						else if(uart_rx_data[CMD_SUB1_IDX]==3)
 							Load_Image_FrameBuffer_2GRAY(IMG_03_25696,0,0,256,96);		
+						else if(uart_rx_data[CMD_SUB1_IDX]==4)
+							Load_Image_FrameBuffer_2GRAY(IMG_QR,0,0,256,96);								
 						else
-							Load_Image_FrameBuffer_2GRAY(IMG_LOGO_QM_G2,67,32,124,34);						
+							Load_Image_FrameBuffer_2GRAY(IMG_LOGO_QM,0,0,256,96);//Load_Image_FrameBuffer_2GRAY(IMG_LOGO_QM_G2,67,32,124,34);						
 						break;
 						
 		case SCN_MODE:	Clear_Frame_Buffer();//30% 적용.
@@ -1287,75 +1383,76 @@ void raon_dispaly_service(void)
 								break;		
 		case SCN_SET_OFFTIME:	Clear_Frame_Buffer();
 								//Display Base Image
-								Load_Image_FrameBuffer_2GRAY(IMG_T0100_BASE,0,0,256,96);
+								//Load_Image_FrameBuffer_2GRAY(IMG_T0100_BASE,0,0,256,96);
+								Load_Image_FrameBuffer_2GRAY(IMG_S0000,0,0,256,96);
 								Load_Image_Set_Offtime(uart_rx_data[CMD_SUB1_IDX]);							
 								break;
 								
 		case SCN_ILLUM_MODE:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
-									Load_Image_FrameBuffer_2GRAY(IMG_0101,0,0,256,96);//오염도.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0101,0,0,256,96);//오염도.
 								else
-									Load_Image_FrameBuffer_2GRAY(IMG_0100,0,0,256,96);//무드등.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0100,0,0,256,96);//무드등.
 								break;				
 		case SCN_ILLUM_STEP:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
-									Load_Image_FrameBuffer_2GRAY(IMG_0201,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0201,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
-									Load_Image_FrameBuffer_2GRAY(IMG_0202,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0202,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)
-									Load_Image_FrameBuffer_2GRAY(IMG_0203,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0203,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==4)
-									Load_Image_FrameBuffer_2GRAY(IMG_0204,0,0,256,96);//수유
+									Load_Image_FrameBuffer_2GRAY(IMG_S0204,0,0,256,96);//수유
 								else if(uart_rx_data[CMD_SUB1_IDX]==5)
-									Load_Image_FrameBuffer_2GRAY(IMG_0205,0,0,256,96);//수면.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0205,0,0,256,96);//수면.
 								else
-									Load_Image_FrameBuffer_2GRAY(IMG_0200,0,0,256,96);								
+									Load_Image_FrameBuffer_2GRAY(IMG_S0200,0,0,256,96);								
 								break;
 		case SCN_BRIGHT:		Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0301,0,0,256,96);//STEP2
+									Load_Image_FrameBuffer_2GRAY(IMG_S0301,0,0,256,96);//STEP2
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0302,0,0,256,96);//STEP3
+									Load_Image_FrameBuffer_2GRAY(IMG_S0302,0,0,256,96);//STEP3
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0303,0,0,256,96);//수유
+									Load_Image_FrameBuffer_2GRAY(IMG_S0303,0,0,256,96);//수유
 								else if(uart_rx_data[CMD_SUB1_IDX]==4)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0304,0,0,256,96);//수면.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0304,0,0,256,96);//수면.
 								else			
-									Load_Image_FrameBuffer_2GRAY(IMG_0300,0,0,256,96);//STEP 1
+									Load_Image_FrameBuffer_2GRAY(IMG_S0300,0,0,256,96);//STEP 1
 								//밝기 조절....
 								
 								break;
 		case SCN_SOUND_MODE:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0401,0,0,256,96);//효과음.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0401,0,0,256,96);//효과음.
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0402,0,0,256,96);//수유
+									Load_Image_FrameBuffer_2GRAY(IMG_S0402,0,0,256,96);//수유
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)								
-									Load_Image_FrameBuffer_2GRAY(IMG_0403,0,0,256,96);//수면.	
+									Load_Image_FrameBuffer_2GRAY(IMG_S0403,0,0,256,96);//수면.	
 								else
-									Load_Image_FrameBuffer_2GRAY(IMG_0400,0,0,256,96);//음성안내.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0400,0,0,256,96);//음성안내.
 								break;			
 		case SCN_SOUND_STEP:	Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
-									Load_Image_FrameBuffer_2GRAY(IMG_0501,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0501,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
-									Load_Image_FrameBuffer_2GRAY(IMG_0502,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0502,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==3)
-									Load_Image_FrameBuffer_2GRAY(IMG_0503,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0503,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==4)
-									Load_Image_FrameBuffer_2GRAY(IMG_0504,0,0,256,96);
+									Load_Image_FrameBuffer_2GRAY(IMG_S0504,0,0,256,96);
 								else if(uart_rx_data[CMD_SUB1_IDX]==5)
-									Load_Image_FrameBuffer_2GRAY(IMG_0505,0,0,256,96);								
+									Load_Image_FrameBuffer_2GRAY(IMG_S0505,0,0,256,96);								
 								else 
-									Load_Image_FrameBuffer_2GRAY(IMG_0500,0,0,256,96);//무음.								
+									Load_Image_FrameBuffer_2GRAY(IMG_S0500,0,0,256,96);//무음.								
 								break;
 		case SCN_FILTER_STEP:		Clear_Frame_Buffer();
 								if(uart_rx_data[CMD_SUB1_IDX]==1)
-									Load_Image_FrameBuffer_2GRAY(IMG_0601,0,0,256,96);//보통 
+									Load_Image_FrameBuffer_2GRAY(IMG_S0601,0,0,256,96);//보통 
 								else if(uart_rx_data[CMD_SUB1_IDX]==2)
-									Load_Image_FrameBuffer_2GRAY(IMG_0602,0,0,256,96);//민감.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0602,0,0,256,96);//민감.
 								else
-									Load_Image_FrameBuffer_2GRAY(IMG_0600,0,0,256,96);//둔감.
+									Load_Image_FrameBuffer_2GRAY(IMG_S0600,0,0,256,96);//둔감.
 								break;
 		case SCN_FILTER_ALARM:	Clear_Frame_Buffer();
 								#if 1
@@ -1530,7 +1627,7 @@ void raon_systeminit(void)
 	uart_config(MAIN_CHANNEL, 38400, DATABITS_8, STOPBITS_1, UART_PARNONE);
 	
 	debugstring("\r\n==========================================================================\r\n");
-    debugprintf("SMX_Quming_2.25Inch_FW:[V%x.%x 38400bps][%s]\r\n", FW_Version[0],FW_Version[1],__DATE__);
+    debugprintf("SMX_Quming_2.25Inch_FW:[V%02d.%02d.%02d 38400bps][Build Date:%s]\r\n", LCD_VER_YEAR, LCD_VER_MON, LCD_VER_DATE,__DATE__);
 	debugstring("==========================================================================\r\n");
 
 	//02.SPI Init
@@ -1610,6 +1707,74 @@ void uart_tx_message(unsigned char mode, unsigned char err_num)
 	{
 		uart_putch(MAIN_CHANNEL, buf[i] );
 	}
+}
+
+void raon_blinkdisp_setfilter_service_new(void)//Add 260212
+{
+//	debugprintf("display_blink_filter_setup_mode(%d,%d).\r\n",fg_blink_mode,fg_blink_is_on);
+	
+	fg_blink_is_on = !fg_blink_is_on;
+	if(fg_blink_mode == 1)//FREE TOGGLE
+	{
+		if(fg_blink_is_on)
+		{
+			//White & Gray 표시.
+			if(disp_free == 1)//GRAY
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_G,35,69,60,22);
+			else if(disp_free == 2)//WHITE
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_W,35,69,60,22);					
+			else//Black
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_B,35,69,60,22);										
+		}
+		else
+		{
+			//Black  표시.				
+			Load_Image_FrameBuffer_2GRAY(IMG_S07_FREE_B,35,69,60,22);														
+		}
+	}
+	else if(fg_blink_mode == 2)//PET TOGGLE
+	{
+		if(fg_blink_is_on)
+		{
+			//White & Gray 표시.
+			if(disp_pet == 1)//GRAY
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_G,98,69,60,22);
+			else if(disp_pet == 2)//WHITE
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_W,98,69,60,22);					
+			else//Black
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_B,98,69,60,22); 									
+		}
+		else
+		{
+			//Black  표시.				
+			Load_Image_FrameBuffer_2GRAY(IMG_S07_PET_B,98,69,60,22);													
+		}
+	}			
+	else if(fg_blink_mode == 3)//COMPLEX TOGGLE
+	{
+		if(fg_blink_is_on)
+		{
+			//White & Gray 표시.
+			if(disp_com == 1)//GRAY
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_G,161,69,60,22);
+			else if(disp_com == 2)//WHITE
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_W,161,69,60,22);					
+			else//Black
+				Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_B,161,69,60,22);									
+		}
+		else
+		{
+			//Black  표시.				
+			Load_Image_FrameBuffer_2GRAY(IMG_S07_COM_B,161,69,60,22);													
+		}
+	}	
+	else
+		;//
+	
+	TFT_LCD_225Inch_SPI_TX(2);
+	LCD_BL_gpio_write(1);		
+	Write_REG_Index(0x29);
+
 }
 
 void raon_blinkdisp_setfilter_service(void)
@@ -1915,7 +2080,7 @@ DATA_OK:		check_sum=0;
 			ServiceTimer500ms = FALSE;
 
 			if(Curr_Scene_ID == SCN_FILTER_ALARM)
-				raon_blinkdisp_setfilter_service();
+				raon_blinkdisp_setfilter_service_new();//Add 260212 //raon_blinkdisp_setfilter_service(); 
 			else if(Curr_Scene_ID == SCN_FILT_POPUP)
 				raon_blinkdisp_popfilter_service();				
 			else if(Curr_Scene_ID == SCN_FILT_CLEAR)
