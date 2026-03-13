@@ -7,8 +7,8 @@
 #define UART_CMD_2ND	0x41//r'A'on
 
 #define LCD_VER_YEAR 26
-#define LCD_VER_MON 02
-#define LCD_VER_DATE 13
+#define LCD_VER_MON 3
+#define LCD_VER_DATE 8
 
 U8 FW_Version[2]={
 	0x00,
@@ -17,6 +17,24 @@ U8 FW_Version[2]={
 #define SPI_MAX_WFIFO_new 8
 #define SPI_CH 1
 #define PWM_CH 1
+
+
+#define MAIN_VER_BASE_X 116
+#define MAIN_VER_BASE_Y 0
+#define MAIN_VER_BASE_OFFSET_X 15
+
+#define IR1_VER_BASE_X 88
+#define IR1_VER_BASE_Y 24
+#define IR1_VER_BASE_OFFSET_X 15
+
+#define IR2_VER_BASE_X 88
+#define IR2_VER_BASE_Y 48
+#define IR2_VER_BASE_OFFSET_X 15
+
+#define LCD_VER_BASE_X 95
+#define LCD_VER_BASE_Y 72
+#define LCD_VER_BASE_OFFSET_X 15
+
 
 enum //UART DATA_IDX
 {

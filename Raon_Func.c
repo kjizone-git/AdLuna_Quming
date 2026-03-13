@@ -1081,6 +1081,81 @@ void Load_Image_Test_Mode_Version(void)
 	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],114,53,14,23);	
 #endif
 }
+
+void Load_Image_Test_Mode_VersionIR(void)
+{
+	U16 offset;
+
+	//Display MCU VERSION		 
+	Load_Image_FrameBuffer_2GRAY(IMG_VERSION_NEW,0,0,256,96);
+
+
+//0x07바이트 년월일. 월일.월일.
+
+	//Display MAIN V XXXXXX
+	//VER YEAR	
+	offset = ((uart_rx_data[CMD_SUB1_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X,MAIN_VER_BASE_Y,14,23);	
+	offset = (uart_rx_data[CMD_SUB1_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X+14,MAIN_VER_BASE_Y,14,23);	
+	//VER MON	
+	offset = ((uart_rx_data[CMD_SUB2_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X+(14*2),MAIN_VER_BASE_Y,14,23);	
+	offset = (uart_rx_data[CMD_SUB2_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X+(14*3),MAIN_VER_BASE_Y,14,23);	
+	//VER DAY	
+	offset = ((uart_rx_data[CMD_SUB3_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X+(14*4),MAIN_VER_BASE_Y,14,23);	
+	offset = (uart_rx_data[CMD_SUB3_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],MAIN_VER_BASE_X+(14*5),MAIN_VER_BASE_Y,14,23);	
+
+
+	//Display IR1 V XXXX
+	//VER MON	
+	offset = ((uart_rx_data[CMD_SUB4_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR1_VER_BASE_X,IR1_VER_BASE_Y,14,23); 
+	offset = (uart_rx_data[CMD_SUB4_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR1_VER_BASE_X+14,IR1_VER_BASE_Y,14,23);	
+	//VER DAY	
+	offset = ((uart_rx_data[CMD_SUB5_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR1_VER_BASE_X+(14*2),IR1_VER_BASE_Y,14,23);	
+	offset = (uart_rx_data[CMD_SUB5_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR1_VER_BASE_X+(14*3),IR1_VER_BASE_Y,14,23);	
+
+	//Display IR2 V XXXX
+	//VER MON	
+	offset = ((uart_rx_data[CMD_SUB6_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR2_VER_BASE_X,IR2_VER_BASE_Y,14,23); 
+	offset = (uart_rx_data[CMD_SUB6_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR2_VER_BASE_X+14,IR2_VER_BASE_Y,14,23);	
+	//VER DAY	
+	offset = ((uart_rx_data[CMD_SUB7_IDX]/10)%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR2_VER_BASE_X+(14*2),IR2_VER_BASE_Y,14,23);	
+	offset = (uart_rx_data[CMD_SUB7_IDX]%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],IR2_VER_BASE_X+(14*3),IR2_VER_BASE_Y,14,23);	
+
+
+	//Display LCD VERSION 00.00.00
+	//VER YEAR 	
+	offset = (LCD_VER_YEAR/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X,LCD_VER_BASE_Y,14,23);	
+	offset = (LCD_VER_YEAR%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X+14,LCD_VER_BASE_Y,14,23);	
+
+	//VER MON
+	offset = (LCD_VER_MON/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X+(14*2),LCD_VER_BASE_Y,14,23);	
+	offset = (LCD_VER_MON%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X+(14*3),LCD_VER_BASE_Y,14,23);	
+
+	//VER DATE
+	offset = (LCD_VER_DATE/10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X+(14*4),LCD_VER_BASE_Y,14,23);	
+	offset = (LCD_VER_DATE%10)*92; 
+	Load_Image_FrameBuffer_2GRAY(&IMG_STNUM[offset],LCD_VER_BASE_X+(14*5),LCD_VER_BASE_Y,14,23);	
+
+}
+
 void Load_Image_Home_New(void)
 {
 	//오염도2 bytes, 대기질1, 오염도단위1, 운전모드1, 잠금표시1	
@@ -1569,7 +1644,10 @@ void raon_dispaly_service(void)
 							break;
 							
 		case SCN_TMODE_VER: Clear_Frame_Buffer();
-							Load_Image_Test_Mode_Version();
+							if(uart_rx_data[CMD_LENGTH_IDX]==2)
+								Load_Image_Test_Mode_Version();
+							else
+								Load_Image_Test_Mode_VersionIR();
 							break; 
 		case SCN_TMODE_RPM: Clear_Frame_Buffer();
 							Load_Image_Test_Mode_RPM();		

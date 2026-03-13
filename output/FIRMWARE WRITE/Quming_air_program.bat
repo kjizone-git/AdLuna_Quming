@@ -1,1 +1,1 @@
-..\EConMan.exe -target adluna -dreset -sysinit -ffw 0x0 Quming_AIR.elf.bin -exit
+\EConMan.exe -target adluna -dreset -sysinit -ffw 0x0 Quming_AIR.bin -exit
